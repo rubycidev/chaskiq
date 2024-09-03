@@ -135,6 +135,7 @@ gem "stripe", "~> 6.0"
 gem "bootsnap", ">= 1.1.0", require: false
 
 gem "dotenv-rails", groups: %i[development test]
+gem "ruby_ci", github: "RubyCI/ruby_ci_gem", branch: "bugfix/188183739-increase-ruby-support"
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
