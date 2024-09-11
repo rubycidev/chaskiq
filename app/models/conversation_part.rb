@@ -178,7 +178,13 @@ class ConversationPart < ApplicationRecord
   end
 
   def send_constraints?
-    is_from_auto_message_campaign? || private_note? || is_event_message?
+    is_from_auto_message_campaign? || private_note? || is_event_message? || email_send_disabled?
+  end
+
+  def email_send_disabled?
+    app = conversation.app
+    app.flagged || (app.plan.name == "free" && Chaskiq::Config.get("DISABLE_OUTGOING_EMAILS_FREE_PLAN")) ||
+      conversation&.main_participant&.disabled_notifications?
   end
 
   def is_from_auto_message_campaign?
