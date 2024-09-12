@@ -1,5 +1,7 @@
 require "execjs"
 require "rspec/expectations"
+require 'open3'
+
 
 def graphql_query(type)
   GraphQL::TestClient.query(type)
@@ -51,8 +53,14 @@ module GraphQL
 
     def get_actions
       configure if @entry.blank?
-      actions = `npx ts-node #{@entry}`
-      @actions = JSON.parse(actions)
+      # Execute the TypeScript file
+      stdout, stderr, status = Open3.capture3("node", @entry)
+      
+      if status.success?
+        @actions = JSON.parse(stdout)
+      else
+        raise "Failed to execute TypeScript file: #{stderr}"
+      end
     end
 
     def data_for(type:, variables: {})
@@ -64,7 +72,14 @@ module GraphQL
 
     def self.query(type)
       configure if @entry.blank?
-      `npx ts-node #{@entry} #{type}`
+      # Execute the TypeScript file
+      stdout, stderr, status = Open3.capture3("node", @entry, type)
+      
+      if status.success?
+        JSON.parse(stdout)
+      else
+        raise "Failed to execute TypeScript file: #{stderr}"
+      end
     end
   end
 end
