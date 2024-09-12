@@ -54,7 +54,7 @@ module GraphQL
     def get_actions
       configure if @entry.blank?
       # Execute the TypeScript file
-      stdout, stderr, status = Open3.capture3("node", @entry)
+      stdout, stderr, status = Open3.capture3("node", @entry.to_s)
       
       if status.success?
         @actions = JSON.parse(stdout)
@@ -72,8 +72,13 @@ module GraphQL
 
     def self.query(type)
       configure if @entry.blank?
+      entry_str = @entry.to_s
+      
+      # Convert type to string if it's not already
+      type_str = type.is_a?(String) ? type : type.to_s
+      
       # Execute the TypeScript file
-      stdout, stderr, status = Open3.capture3("node", @entry, type)
+      stdout, stderr, status = Open3.capture3("node", entry_str, type_str)
       
       if status.success?
         JSON.parse(stdout)
